@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Phone Agency — Business OS</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#0f0f18;--bg2:#16162a;--bg3:#1e1e30;
+    --border:#2a2a3e;--border2:#1a1a28;
+    --text:#e2e8f0;--muted:#94a3b8;--hint:#475569;
+    --purple:#7c3aed;--blue:#2563eb;--green:#059669;
+    --orange:#d97706;--pink:#db2777;--cyan:#0891b2;
+    --gold:#f59e0b;--red:#dc2626;
+  }
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+  a{color:var(--purple);text-decoration:none}
+
+  /* NAV */
+  nav{position:sticky;top:0;z-index:100;background:rgba(15,15,24,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:60px}
+  .nav-logo{font-weight:800;font-size:16px;background:linear-gradient(135deg,var(--purple),var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .nav-links{display:flex;gap:4px;flex-wrap:wrap}
+  .nav-links a{padding:6px 12px;border-radius:8px;font-size:12px;font-weight:600;color:var(--muted);transition:all .2s;cursor:pointer;border:none;background:none}
+  .nav-links a:hover,.nav-links a.active{background:var(--bg3);color:var(--text)}
+  .nav-links a.active{color:var(--purple)}
+
+  /* HERO */
+  .hero{padding:64px 24px 48px;text-align:center;max-width:800px;margin:0 auto}
+  .hero-badge{display:inline-block;padding:4px 16px;border-radius:20px;background:var(--purple)22;border:1px solid var(--purple)44;font-size:11px;font-weight:700;color:var(--purple);letter-spacing:2px;text-transform:uppercase;margin-bottom:20px}
+  .hero h1{font-size:clamp(28px,5vw,48px);font-weight:900;line-height:1.15;margin-bottom:16px;background:linear-gradient(135deg,#fff,var(--muted));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .hero p{font-size:16px;color:var(--muted);max-width:600px;margin:0 auto 28px;line-height:1.8}
+  .hero-stats{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+  .stat-pill{padding:8px 20px;border-radius:20px;background:var(--bg2);border:1px solid var(--border);font-size:13px;font-weight:600}
+  .stat-pill span{color:var(--green)}
+
+  /* SECTIONS */
+  .section{max-width:960px;margin:0 auto;padding:48px 24px}
+  .section-header{margin-bottom:28px}
+  .section-label{font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:700;margin-bottom:8px}
+  .section-title{font-size:clamp(20px,3vw,28px);font-weight:800;margin-bottom:8px}
+  .section-sub{font-size:14px;color:var(--muted);line-height:1.7}
+
+  /* CARDS */
+  .card{background:var(--bg2);border-radius:14px;border:1px solid var(--border);padding:20px}
+  .card-sm{background:var(--bg3);border-radius:10px;border:1px solid var(--border2);padding:14px}
+  .grid-2{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+  .grid-3{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+  .grid-4{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+
+  /* TABS */
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px}
+  .tab-btn{padding:8px 18px;border-radius:10px;border:none;cursor:pointer;font-size:13px;font-weight:600;background:var(--bg3);color:var(--hint);transition:all .2s}
+  .tab-btn.active{background:linear-gradient(135deg,var(--purple),var(--blue));color:#fff;box-shadow:0 0 16px #7c3aed33}
+  .tab-content{display:none}
+  .tab-content.active{display:block}
+
+  /* ACCORDION */
+  .acc-item{margin-bottom:8px;border-radius:12px;overflow:hidden}
+  .acc-header{display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;background:var(--bg2);border:1px solid var(--border);user-select:none;transition:all .2s}
+  .acc-header:hover{border-color:var(--purple)44}
+  .acc-header.open{border-radius:12px 12px 0 0;border-color:var(--purple)55;background:linear-gradient(135deg,#1a0a3e,#0a1030)}
+  .acc-body{display:none;background:var(--bg2);border:1px solid var(--border);border-top:none;border-radius:0 0 12px 12px;padding:18px}
+  .acc-body.open{display:block}
+  .acc-arrow{margin-left:auto;color:var(--hint);font-size:12px;transition:transform .2s}
+  .acc-header.open .acc-arrow{transform:rotate(180deg)}
+
+  /* CHECKLIST */
+  .check-item{display:flex;gap:12px;padding:10px 12px;border-radius:8px;background:var(--bg3);border:1px solid var(--border2);margin-bottom:6px;cursor:pointer;transition:all .2s;align-items:flex-start}
+  .check-item:hover{border-color:var(--purple)33}
+  .check-item.done{background:#0a1a0a;opacity:.6}
+  .check-box{width:20px;height:20px;border-radius:4px;border:2px solid var(--border);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .2s}
+  .check-item.done .check-box{background:var(--green);border-color:var(--green);color:#fff}
+  .check-item.done .check-text{text-decoration:line-through;color:var(--hint)}
+  .check-meta{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:3px}
+  .badge{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:700}
+  .badge-critical{background:#3b076422;color:#c4b5fd;border:1px solid #7c3aed33}
+  .badge-high{background:#1e3a5f22;color:#93c5fd;border:1px solid #2563eb33}
+  .badge-medium{background:#1a2a1a22;color:#6ee7b7;border:1px solid #05966933}
+  .badge-day{background:var(--bg);color:var(--purple);border:1px solid var(--purple)33}
+
+  /* TABLE */
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{padding:10px 14px;color:var(--hint);text-align:left;border-bottom:1px solid var(--border);font-weight:600;font-size:11px;letter-spacing:1px;text-transform:uppercase}
+  td{padding:10px 14px;border-bottom:1px solid var(--border2);color:var(--muted)}
+  tr:last-child td{border-bottom:none}
+
+  /* FLOW STEPS */
+  .flow-step{display:flex;gap:14px;margin-bottom:10px;align-items:flex-start}
+  .flow-num{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex-shrink:0;margin-top:2px}
+  .flow-content{flex:1;background:var(--bg3);border-radius:10px;padding:12px 14px;border:1px solid var(--border2)}
+
+  /* TIMELINE */
+  .timeline-item{display:flex;gap:16px;margin-bottom:16px}
+  .timeline-line{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+  .timeline-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;margin-top:4px}
+  .timeline-connector{width:2px;flex:1;margin-top:4px;background:var(--border)}
+
+  /* TOOL GRID */
+  .tool-card{background:var(--bg3);border-radius:10px;padding:14px;border:1px solid var(--border2)}
+  .tool-name{font-weight:700;font-size:14px;margin-bottom:4px}
+  .tool-desc{font-size:12px;color:var(--hint);margin-bottom:6px;line-height:1.5}
+  .tool-cost{font-size:12px;font-weight:700;color:var(--green)}
+  .tool-url{font-size:11px;color:var(--purple);margin-top:2px}
+
+  /* DIVIDER */
+  .divider{border:none;border-top:1px solid var(--border);margin:40px 0}
+
+  /* FOOTER */
+  footer{text-align:center;padding:40px 24px;color:var(--hint);font-size:12px;border-top:1px solid var(--border)}
+
+  /* HIGHLIGHT */
+  .highlight{color:var(--green);font-weight:700}
+  .highlight-p{color:var(--purple);font-weight:700}
+  .highlight-b{color:var(--blue);font-weight:700}
+
+  /* CALLOUT */
+  .callout{padding:14px 18px;border-radius:10px;font-size:13px;line-height:1.7;margin:12px 0}
+  .callout-purple{background:var(--purple)11;border-left:3px solid var(--purple);color:var(--muted)}
+  .callout-green{background:#05966911;border-left:3px solid var(--green);color:var(--muted)}
+  .callout-orange{background:#d9780611;border-left:3px solid var(--orange);color:var(--muted)}
+  .callout-red{background:#dc262611;border-left:3px solid var(--red);color:var(--muted)}
+
+  /* PROGRESS BAR */
+  .progress-bar{height:4px;border-radius:2px;background:var(--border);overflow:hidden;margin-top:6px}
+  .progress-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--purple),var(--blue))}
+
+  /* MOBILE */
+  @media(max-width:600px){
+    .nav-links{display:none}
+    .hero{padding:40px 16px 32px}
+    .section{padding:32px 16px}
+  }
+
+  /* PRINT */
+  @media print{nav,footer{display:none}.section{padding:20px 0}}
+
+  /* SCROLL REVEAL */
+  .reveal{opacity:0;transform:translateY(16px);transition:opacity .5s,transform .5s}
+  .revealed{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">AI Phone Agency</div>
+  <div class="nav-links">
+    <a onclick="scrollTo('biz')">Business Plan</a>
+    <a onclick="scrollTo('action')">Action Plan</a>
+    <a onclick="scrollTo('todo')">To-Do</a>
+    <a onclick="scrollTo('systems')">Systems</a>
+    <a onclick="scrollTo('industries')">Industries</a>
+    <a onclick="scrollTo('caller')">AI Caller</a>
+    <a onclick="scrollTo('tools')">Tools</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero reveal">
+  <div class="hero-badge">Complete Business OS</div>
+  <h1>AI Phone Systems for Home Services & Trades</h1>
+  <p>A fully automated agency that finds clients, calls them with personalized AI pitches, signs them, onboards them in 48 hours, and keeps them on monthly recurring revenue.</p>
+  <div class="hero-stats">
+    <div class="stat-pill">Target MRR <span>$10K–$22K</span></div>
+    <div class="stat-pill">Launch timeline <span>4 weeks</span></div>
+    <div class="stat-pill">Client pricing <span>$99–$249/mo</span></div>
+    <div class="stat-pill">Industries <span>8 niches</span></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════ BUSINESS PLAN ═══════════════════════════════ -->
+<div id="biz" class="section reveal">
+  <div class="section-header">
+    <div class="section-label" style="color:var(--purple)">01 — Business Plan</div>
+    <div class="section-title">The Business Model</div>
+    <div class="section-sub">Monthly recurring subscriptions. One client at $150/mo pays for weeks of prospecting.</div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:16px">
+    <div class="card" style="border-color:var(--purple)33">
+      <div class="section-label" style="color:var(--purple);margin-bottom:8px">Mission</div>
+      <p style="font-size:14px;color:var(--muted);line-height:1.8">Help home service and specialty trade businesses never miss a call — using AI phone systems that answer 24/7, book appointments, handle emergencies, and follow up automatically.</p>
+    </div>
+    <div class="card" style="border-color:var(--blue)33">
+      <div class="section-label" style="color:var(--blue);margin-bottom:8px">Revenue Model</div>
+      <p style="font-size:14px;color:var(--muted);line-height:1.8">Monthly recurring subscriptions (MRR). Clients pay $99–$249/month per business. Zero per-call fees to them. Predictable income for you. Low churn — businesses that depend on phone calls never cancel.</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px">
+    <div class="section-label" style="color:var(--green);margin-bottom:12px">Revenue Projections</div>
+    <div class="grid-4">
+      <div class="card-sm" style="text-align:center">
+        <div style="font-size:11px;color:var(--hint);margin-bottom:4px">Month 1–2</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:4px">5–10 clients</div>
+        <div style="font-size:20px;font-weight:800;color:var(--green)">$500–1,500</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:8%"></div></div>
+      </div>
+      <div class="card-sm" style="text-align:center">
+        <div style="font-size:11px;color:var(--hint);margin-bottom:4px">Month 3–4</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:4px">15–25 clients</div>
+        <div style="font-size:20px;font-weight:800;color:var(--green)">$2,000–4,500</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:25%"></div></div>
+      </div>
+      <div class="card-sm" style="text-align:center">
+        <div style="font-size:11px;color:var(--hint);margin-bottom:4px">Month 5–6</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:4px">35–50 clients</div>
+        <div style="font-size:20px;font-weight:800;color:var(--green)">$5,000–9,000</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:55%"></div></div>
+      </div>
+      <div class="card-sm" style="text-align:center">
+        <div style="font-size:11px;color:var(--hint);margin-bottom:4px">Month 9–12</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:4px">75–120 clients</div>
+        <div style="font-size:20px;font-weight:800;color:var(--green)">$12K–22K</div>
+        <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:16px">
+    <div class="section-label" style="color:var(--orange);margin-bottom:12px">Target Markets</div>
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr><th>Industry</th><th>Business Size</th><th>Core Pain</th><th>Pricing</th><th>Avg Call Value</th></tr></thead>
+        <tbody>
+          <tr><td style="color:#a5b4fc;font-weight:600">HVAC</td><td>Solo + small teams</td><td>On job sites all day</td><td class="highlight">$149–$249/mo</td><td>$250–$2,000</td></tr>
+          <tr><td style="color:#a5b4fc;font-weight:600">Plumbing</td><td>1–5 techs</td><td>Emergency calls missed</td><td class="highlight">$149–$249/mo</td><td>$200–$1,500</td></tr>
+          <tr><td style="color:#a5b4fc;font-weight:600">Electrical</td><td>Licensed solo ops</td><td>No office staff</td><td class="highlight">$149–$249/mo</td><td>$300–$3,000</td></tr>
+          <tr><td style="color:#a5b4fc;font-weight:600">Pool & Spa</td><td>Seasonal operators</td><td>Summer call surge</td><td class="highlight">$99–$199/mo</td><td>$150–$800</td></tr>
+          <tr><td style="color:#a5b4fc;font-weight:600">Irrigation</td><td>Small crews</td><td>Spring blowout chaos</td><td class="highlight">$99–$199/mo</td><td>$100–$500</td></tr>
+          <tr><td style="color:#a5b4fc;font-weight:600">Appliance Repair</td><td>Solo operators</td><td>Same 5 questions all day</td><td class="highlight">$99–$149/mo</td><td>$150–$400</td></tr>
+          <tr><td style="color:#a5b4fc;font-weight:600">Locksmith</td><td>Solo owner-ops</td><td>First to answer wins</td><td class="highlight">$99–$149/mo</td><td>$75–$400</td></tr>
+          <tr><td style="color:#a5b4fc;font-weight:600">Septic</td><td>Small regional ops</td><td>Emergency urgency</td><td class="highlight">$149–$199/mo</td><td>$300–$2,000</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card" style="border-color:var(--pink)33">
+    <div class="section-label" style="color:var(--pink);margin-bottom:12px">Competitive Advantages</div>
+    <div class="grid-2">
+      <div class="callout callout-purple">
+        <strong style="color:var(--text)">Niche-specific scripts</strong><br>
+        Pool companies get pool language. Plumbers get plumber language. Not a generic bot.
+      </div>
+      <div class="callout callout-purple">
+        <strong style="color:var(--text)">Research-first calling</strong><br>
+        AI studies each prospect before calling. Personalized pitch = 5× higher conversion.
+      </div>
+      <div class="callout callout-purple">
+        <strong style="color:var(--text)">48-hour client launch</strong><br>
+        Sign on Monday, live on Wednesday. Faster than any competitor.
+      </div>
+      <div class="callout callout-purple">
+        <strong style="color:var(--text)">Fully automated pipeline</strong><br>
+        Find, call, close, onboard, report — minimal manual work required.
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════ ACTION PLAN ═══════════════════════════════ -->
+<div id="action" class="section reveal">
+  <div class="section-header">
+    <div class="section-label" style="color:var(--blue)">02 — Action Plan</div>
+    <div class="section-title">3 Phases to First $10K/Month</div>
+    <div class="section-sub">Do these in order. Each phase builds on the last.</div>
+  </div>
+
+  <!-- Phase 1 -->
+  <div class="acc-item">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <div style="width:42px;height:42px;border-radius:10px;background:#7c3aed22;border:1px solid #7c3aed44;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <span style="font-weight:800;font-size:13px;color:var(--purple)">P1</span>
+      </div>
+      <div>
+        <div style="font-weight:700;font-size:15px">Phase 1 — Foundation</div>
+        <div style="font-size:12px;color:var(--hint)">Weeks 1–2 · Tools set up. First leads scraped. First calls going out.</div>
+      </div>
+      <div class="acc-arrow">▼</div>
+    </div>
+    <div class="acc-body">
+      <div id="phase1-list">
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-meta"><span class="badge badge-day">Day 1</span><span class="badge badge-critical">critical</span></div><div class="check-text">Sign up for GoHighLevel ($97/mo) — your CRM, pipeline, billing, contracts</div><div style="font-size:11px;color:var(--purple);margin-top:2px">gohighlevel.com</div></div></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-meta"><span class="badge badge-day">Day 1</span><span class="badge badge-critical">critical</span></div><div class="check-text">Sign up for Bland.ai — outbound AI caller ($0.09/min)</div><div style="font-size:11px;color:var(--purple);margin-top:2px">bland.ai</div></div></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-meta"><span class="badge badge-day">Day 1</span><span class="badge badge-critical">critical</span></div><div class="check-text">Sign up for Synthflow — inbound AI phone system you sell to clients ($97/mo)</div><div style="font-size:11px;color:var(--purple);margin-top:2px">synthflow.ai</div></div></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-meta"><span class="badge badge-day">Day 1</span><span class="badge badge-critical">critical</span></div><div class="check-text">Sign up for Outscraper — Google Maps scraper (free credits to start)</div><div style="font-size:11px;color:var(--purple);margin-top:2px">outscraper.com</div></div></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-meta"><span class="badge badge-day">Day 1</span><span class="badge badge-high">high</span></div><div class="check-text">Sign up for n8n Cloud ($20/mo) — automation backbone</div><div style="font-size:11px;color:var(--purple);margin-top:2px">n8n.io</div></div></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-meta"><span class="badge badge-day">Day 1</span><span class="badge badge-high">high</span></div><div class="check-text">Create Stripe account — how clients pay you</div><div style="font-size:11px;color:var(--purple);margin-top:2px">stripe.com</div></div></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-meta"><span class="badge badge-day">Day 2</span><span class="badge badge-critical">critical</span></div><div class="check-text">Pick ONE industry (HVAC recommended) and ONE city to start</div></div></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-meta"><span class="badge badge-day">Day 2</span><span class="badge badge-critical">critical</span></div><div class="check-text">Ask Claude to generate 50+ Google Maps search queries for your niche + city</div></div></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-meta"><span class="badge badge-day">Day 2</span><span class="badge badge-critical">critical</span></div><div class="check-text">Run Outscraper with those queries — get 200–500 business leads into a spreadsheet</div></div></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-meta"><span class="badge badge-day">Day 3</span><span class="badge badge-critical">critical</span></div><div class="check-text">Filter leads: remove chains, keep solo operators with 3.5–4.5 star ratings</div></div></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-meta"><span class="badge badge-day">Day 3</span><span class="badge badge-high">high</span></div><div class="check-text">Import filtered leads into GoHighLevel CRM</div></div></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-meta"><span class="badge badge-day">Day 3</span><span class="badge badge-critical">critical</span></div><div class="check-text">Ask Claude to write your HVAC outbound call script with all personalization variables</div></div></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-meta"><span class="badge badge-day">Day 4</span><span class="badge badge-critical">critical</span></div><div class="check-text">Load script into Bland.ai. Set call hours: 9am–5pm local time only</div></div></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-meta"><span class="badge badge-day">Day 4</span><span class="badge badge-high">high</span></div><div class="check-text">Set up Cal.com (free) for demo bookings — connect to your calendar</div></div></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-meta"><span class="badge badge-day">Day 4</span><span class="badge badge-critical">critical</span></div><div class="check-text">Run 10 test calls to yourself. Fix anything that sounds off</div></div></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-meta"><span class="badge badge-day">Day 5</span><span class="badge badge-critical">critical</span></div><div class="check-text">Launch first 50 outbound calls. Listen to all recordings same day.</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 2 -->
+  <div class="acc-item" style="margin-top:10px">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <div style="width:42px;height:42px;border-radius:10px;background:#2563eb22;border:1px solid #2563eb44;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <span style="font-weight:800;font-size:13px;color:var(--blue)">P2</span>
+      </div>
+      <div>
+        <div style="font-weight:700;font-size:15px">Phase 2 — First Revenue</div>
+        <div style="font-size:12px;color:var(--hint)">Weeks 3–4 · First 3–5 paying clients. System refinement.</div>
+      </div>
+      <div class="acc-arrow">▼</div>
+    </div>
+    <div class="acc-body">
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-meta"><span class="badge badge-day">Week 3</span><span class="badge badge-critical">critical</span></div><div class="check-text">Scale to 100 calls/day. Review call recordings every morning</div></div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-meta"><span class="badge badge-day">Week 3</span><span class="badge badge-critical">critical</span></div><div class="check-text">GHL automation: Interested → auto-text Calendly link within 60 seconds</div></div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-meta"><span class="badge badge-day">Week 3</span><span class="badge badge-critical">critical</span></div><div class="check-text">GHL automation: Voicemail → schedule auto-retry in 48 hours</div></div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-meta"><span class="badge badge-day">Week 3</span><span class="badge badge-high">high</span></div><div class="check-text">Build a live demo: Synthflow agent using a prospect's business name — use this on demo calls</div></div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-meta"><span class="badge badge-day">Week 3</span><span class="badge badge-high">high</span></div><div class="check-text">Add n8n research layer: website crawl + review pull before each call (Firecrawl + Outscraper)</div></div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-meta"><span class="badge badge-day">Week 4</span><span class="badge badge-critical">critical</span></div><div class="check-text">Hold first demo calls — show LIVE AI answering with their actual business name</div></div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-meta"><span class="badge badge-day">Week 4</span><span class="badge badge-critical">critical</span></div><div class="check-text">Send contract + Stripe link same day as demo (GHL template — 2 clicks)</div></div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-meta"><span class="badge badge-day">Week 4</span><span class="badge badge-critical">critical</span></div><div class="check-text">Onboard first clients: build their script with Claude, load into Synthflow, live in 48hrs</div></div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-meta"><span class="badge badge-day">Week 4</span><span class="badge badge-high">high</span></div><div class="check-text">Set up weekly auto-report SMS: "Your AI answered X calls this week" via GHL</div></div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-meta"><span class="badge badge-day">Week 4</span><span class="badge badge-medium">medium</span></div><div class="check-text">Ask every happy client for 1 referral</div></div></div>
+    </div>
+  </div>
+
+  <!-- Phase 3 -->
+  <div class="acc-item" style="margin-top:10px">
+    <div class="acc-header" onclick="toggleAcc(this)">
+      <div style="width:42px;height:42px;border-radius:10px;background:#05966922;border:1px solid #05966944;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <span style="font-weight:800;font-size:13px;color:var(--green)">P3</span>
+      </div>
+      <div>
+        <div style="font-weight:700;font-size:15px">Phase 3 — Scale</div>
+        <div style="font-size:12px;color:var(--hint)">Months 2–4 · 30–50 clients. Add second niche. Referral machine.</div>
+      </div>
+      <div class="acc-arrow">▼</div>
+    </div>
+    <div class="acc-body">
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-meta"><span class="badge badge-day">Month 2</span><span class="badge badge-critical">critical</span></div><div class="check-text">Add second niche: plumbing or pool — build industry-specific scripts</div></div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-meta"><span class="badge badge-day">Month 2</span><span class="badge badge-high">high</span></div><div class="check-text">Build niche landing pages: "AI Phone System for HVAC Companies"</div></div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-meta"><span class="badge badge-day">Month 2</span><span class="badge badge-high">high</span></div><div class="check-text">Join 2–3 trade Facebook groups — share case studies and results</div></div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-meta"><span class="badge badge-day">Month 2</span><span class="badge badge-high">high</span></div><div class="check-text">Launch referral program: $50/mo credit per referral for existing clients</div></div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-meta"><span class="badge badge-day">Month 3</span><span class="badge badge-high">high</span></div><div class="check-text">Hire part-time VA ($500–800/mo) to handle outreach and basic onboarding</div></div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-meta"><span class="badge badge-day">Month 3</span><span class="badge badge-high">high</span></div><div class="check-text">Expand to 3 cities or 3 niches with separate call campaigns</div></div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-meta"><span class="badge badge-day">Month 3</span><span class="badge badge-medium">medium</span></div><div class="check-text">Add upsells: CRM integration (+$50/mo), bilingual AI (+$50/mo), analytics (+$30/mo)</div></div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-meta"><span class="badge badge-day">Month 4</span><span class="badge badge-high">high</span></div><div class="check-text">Set up commission-based sales closer (10–15% of first 3 months)</div></div></div>
+      <div class="check-item" onclick="toggleCheck(this)"><div class="check-box"></div><div><div class="check-meta"><span class="badge badge-day">Month 4</span><span class="badge badge-medium">medium</span></div><div class="check-text">Build case study library with real client results (calls answered, revenue saved)</div></div></div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════ SYSTEMS ═══════════════════════════════ -->
+<div id="systems" class="section reveal">
+  <div class="section-header">
+    <div class="section-label" style="color:var(--cyan)">03 — Systems to Build</div>
+    <div class="section-title">The 4 Core Systems</div>
+    <div class="section-sub">Each system runs mostly automatically once set up. Together they form a complete automated business.</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('sys','s1',this)">🔍 Lead Generation</button>
+    <button class="tab-btn" onclick="switchTab('sys','s2',this)">📞 Outbound Calling</button>
+    <button class="tab-btn" onclick="switchTab('sys','s3',this)">✅ Client Delivery</button>
+    <button class="tab-btn" onclick="switchTab('sys','s4',this)">📊 Retention</button>
+  </div>
+
+  <div id="sys-s1" class="tab-content active">
+    <div class="card" style="border-color:var(--purple)33">
+      <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:14px">
+        <div style="font-size:28px">🔍</div>
+        <div>
+          <div style="font-weight:800;font-size:17px;color:var(--purple)">Lead Generation System</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:2px">Finds and enriches prospects automatically. Runs daily without manual input.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px">
+        <span style="font-size:12px;padding:3px 10px;border-radius:20px;background:var(--purple)22;color:var(--purple);font-weight:600">Outscraper</span>
+        <span style="font-size:12px;padding:3px 10px;border-radius:20px;background:var(--purple)22;color:var(--purple);font-weight:600">n8n</span>
+        <span style="font-size:12px;padding:3px 10px;border-radius:20px;background:var(--purple)22;color:var(--purple);font-weight:600">Firecrawl</span>
+        <span style="font-size:12px;padding:3px 10px;border-radius:20px;background:var(--purple)22;color:var(--purple);font-weight:600">Claude API</span>
+        <span style="font-size:12px;padding:3px 10px;border-radius:20px;background:var(--purple)22;color:var(--purple);font-weight:600">Google Sheets</span>
+        <span style="font-size:12px;padding:3px 10px;border-radius:20px;background:var(--purple)22;color:var(--purple);font-weight:600">SerpAPI</span>
+      </div>
+      <div id="sys1-flow">
+        <div class="flow-step"><div class="flow-num" style="background:var(--purple)22;color:var(--purple)">1</div><div class="flow-content"><strong style="font-size:13px">n8n runs scheduled search queries</strong><p style="font-size:12px;color:var(--muted);margin-top:3px">Outscraper scrapes Google Maps — returns business name, phone, address, website, star rating, review count</p></div></div>
+        <div class="flow-step"><div class="flow-num" style="background:var(--purple)22;color:var(--purple)">2</div><div class="flow-content"><strong style="font-size:13px">n8n filters leads automatically</strong><p style="font-size:12px;color:var(--muted);margin-top:3px">Removes chains/franchises, flags solo operators, scores by rating (3.5–4.2 is the sweet spot)</p></div></div>
+        <div class="flow-step"><div class="flow-num" style="background:var(--purple)22;color:var(--purple)">3</div><div class="flow-content"><strong style="font-size:13px">Firecrawl scrapes their website</strong><p style="font-size:12px;color:var(--muted);margin-top:3px">Extracts: services offered, service areas, team size, pricing if visible</p></div></div>
+        <div class="flow-step"><div class="flow-num" style="background:var(--purple)22;color:var(--purple)">4</div><div class="flow-content"><strong style="font-size:13px">SerpAPI checks for Google Ads</strong><p style="font-size:12px;color:var(--muted);margin-top:3px">If they're running ads, they're paying for leads they miss. Highest priority target.</p></div></div>
+        <div class="flow-step"><div class="flow-num" style="background:var(--purple)22;color:var(--purple)">5</div><div class="flow-content"><strong style="font-size:13px">Claude writes personalized call brief</strong><p style="font-size:12px;color:var(--muted);margin-top:3px">3-sentence summary injected as variables into the call script before dialing</p></div></div>
+        <div class="flow-step"><div class="flow-num" style="background:var(--purple)22;color:var(--purple)">6</div><div class="flow-content"><strong style="font-size:13px">Leads auto-import to GoHighLevel</strong><p style="font-size:12px;color:var(--muted);margin-top:3px">Tagged by industry, city, priority score. Ready to call in 1 click.</p></div></div>
+      </div>
+      <div class="callout callout-green" style="margin-top:12px"><strong style="color:var(--text)">Output:</strong> 200–600 research-enriched, ready-to-call leads per week at ~$10–20 cost</div>
+    </div>
+  </div>
+
+  <div id="sys-s2" class="tab-content">
+    <div class="card" style="border-color:var(--blue)33">
+      <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:14px">
+        <div style="font-size:28px">📞</div>
+        <div>
+          <div style="font-weight:800;font-size:17px;color:var(--blue)">Outbound Calling System</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:2px">AI calls prospects with personalized pitches. Books demos or closes on the spot.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px">
+        <span style="font-size:12px;padding:3px 10px;border-radius:20px;background:var(--blue)22;color:var(--blue);font-weight:600">Bland.ai</span>
+        <span style="font-size:12px;padding:3px 10px;border-radius:20px;background:var(--blue)22;color:var(--blue);font-weight:600">GoHighLevel</span>
+        <span style="font-size:12px;padding:3px 10px;border-radius:20px;background:var(--blue)22;color:var(--blue);font-weight:600">Twilio</span>
+        <span style="font-size:12px;padding:3px 10px;border-radius:20px;background:var(--blue)22;color:var(--blue);font-weight:600">Cal.com</span>
+      </div>
+      <div class="flow-step"><div class="flow-num" style="background:var(--blue)22;color:var(--blue)">1</div><div class="flow-content"><strong style="font-size:13px">Bland.ai pulls contact list from GHL</strong><p style="font-size:12px;color:var(--muted);margin-top:3px">Calls 9am–5pm local time, rotates phone numbers to avoid spam flags</p></div></div>
+      <div class="flow-step"><div class="flow-num" style="background:var(--blue)22;color:var(--blue)">2</div><div class="flow-content"><strong style="font-size:13px">Variables injected per business</strong><p style="font-size:12px;color:var(--muted);margin-top:3px">Business name, star rating, services, ad status, review sentiment — all personalized</p></div></div>
+      <div class="flow-step"><div class="flow-num" style="background:var(--blue)22;color:var(--blue)">3</div><div class="flow-content"><strong style="font-size:13px">AI delivers personalized pitch</strong><p style="font-size:12px;color:var(--muted);margin-top:3px">"I was looking at [Business Name]'s Google listing and noticed..." — they stay on the line</p></div></div>
+      <div class="flow-step"><div class="flow-num" style="background:var(--blue)22;color:var(--blue)">4</div><div class="flow-content"><strong style="font-size:13px">Live 10-second demo plays</strong><p style="font-size:12px;color:var(--muted);margin-top:3px">AI plays a sample of what their phone system would sound like with their business name</p></div></div>
+      <div class="flow-step"><div class="flow-num" style="background:var(--blue)22;color:var(--blue)">5</div><div class="flow-content"><strong style="font-size:13px">Outcome auto-routed in GHL</strong><p style="font-size:12px;color:var(--muted);margin-top:3px">Interested → Calendly text. Voicemail → retry in 48hrs. DNC → removed permanently.</p></div></div>
+      <div class="callout callout-green" style="margin-top:12px"><strong style="color:var(--text)">Output:</strong> 50–150 personalized calls/day · 8–12% interest rate · all outcomes tracked automatically</div>
+    </div>
+  </div>
+
+  <div id="sys-s3" class="tab-content">
+    <div class="card" style="border-color:var(--green)33">
+      <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:14px">
+        <div style="font-size:28px">✅</div>
+        <div>
+          <div style="font-weight:800;font-size:17px;color:var(--green)">Client Delivery System</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:2px">Signed client to live AI phone system in 48 hours.</div>
+        </div>
+      </div>
+      <div class="flow-step"><div class="flow-num" style="background:var(--green)22;color:var(--green)">1</div><div class="flow-content"><strong style="font-size:13px">Day 0 — Client signs + pays</strong><p style="font-size:12px;color:var(--muted);margin-top:3px">GHL contract + Stripe link sent in 2 clicks. Welcome email + onboarding form auto-sent.</p></div></div>
+      <div class="flow-step"><div class="flow-num" style="background:var(--green)22;color:var(--green)">2</div><div class="flow-content"><strong style="font-size:13px">Day 1 — Build</strong><p style="font-size:12px;color:var(--muted);margin-top:3px">Paste their onboarding form into Claude → custom AI script in 10 minutes. Load into Synthflow.</p></div></div>
+      <div class="flow-step"><div class="flow-num" style="background:var(--green)22;color:var(--green)">3</div><div class="flow-content"><strong style="font-size:13px">Day 2 — Launch</strong><p style="font-size:12px;color:var(--muted);margin-top:3px">5 test calls run. Forwarding instructions sent to client. They go live.</p></div></div>
+      <div class="flow-step"><div class="flow-num" style="background:var(--green)22;color:var(--green)">4</div><div class="flow-content"><strong style="font-size:13px">Week 1 — Optimize</strong><p style="font-size:12px;color:var(--muted);margin-top:3px">Review first 10 real call recordings. Fix any gaps. Send first weekly report.</p></div></div>
+      <div class="callout callout-green" style="margin-top:12px"><strong style="color:var(--text)">Output:</strong> Client live in 48 hours. Zero manual code. Automated check-ins prevent churn.</div>
+    </div>
+  </div>
+
+  <div id="sys-s4" class="tab-content">
+    <div class="card" style="border-color:var(--orange)33">
+      <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:14px">
+        <div style="font-size:28px">📊</div>
+        <div>
+          <div style="font-weight:800;font-size:17px;color:var(--orange)">Client Retention System</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:2px">Keeps clients happy and paying through automated value delivery.</div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card-sm"><div style="font-size:11px;color:var(--orange);font-weight:700;margin-bottom:6px">WEEKLY</div><p style="font-size:13px;color:var(--muted)">Auto-SMS to every client: "Your AI answered 47 calls this week for [Business Name]"</p></div>
+        <div class="card-sm"><div style="font-size:11px;color:var(--orange);font-weight:700;margin-bottom:6px">MONTHLY</div><p style="font-size:13px;color:var(--muted)">Email report: calls answered, appointments booked, estimated revenue saved</p></div>
+        <div class="card-sm"><div style="font-size:11px;color:var(--orange);font-weight:700;margin-bottom:6px">30-DAY NPS</div><p style="font-size:13px;color:var(--muted)">Score below 7 → immediate check-in task. Score 9–10 → auto-trigger referral request.</p></div>
+        <div class="card-sm"><div style="font-size:11px;color:var(--orange);font-weight:700;margin-bottom:6px">CHURN ALERT</div><p style="font-size:13px;color:var(--muted)">If call volume drops 30%+ week-over-week → auto check-in text to client</p></div>
+        <div class="card-sm"><div style="font-size:11px;color:var(--orange);font-weight:700;margin-bottom:6px">QUARTERLY</div><p style="font-size:13px;color:var(--muted)">15-minute check-in call auto-booked via GHL. Review results, upsell if appropriate.</p></div>
+        <div class="card-sm"><div style="font-size:11px;color:var(--orange);font-weight:700;margin-bottom:6px">UPSELL TRIGGER</div><p style="font-size:13px;color:var(--muted)">Client passes 100 calls/week → auto-prompt for upgrade to higher plan</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════ INDUSTRIES ═══════════════════════════════ -->
+<div id="industries" class="section reveal">
+  <div class="section-header">
+    <div class="section-label" style="color:var(--orange)">04 — Industry Kits</div>
+    <div class="section-title">8 Ready-to-Deploy Niches</div>
+    <div class="section-sub">Each kit has the core pain, what the AI handles, pricing, and your closing hook.</div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card" style="border-color:#2563eb33">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+        <div><div style="font-size:22px">❄️</div><div style="font-weight:800;color:var(--blue);font-size:16px;margin-top:4px">HVAC</div></div>
+        <div style="text-align:right"><div style="font-size:11px;color:var(--hint)">Suggested price</div><div style="font-weight:800;color:var(--green);font-size:15px">$149–$249/mo</div></div>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.6">Techs are in attics all day. Miss 60–80% of calls including $500+ emergency breakdowns.</p>
+      <div style="font-size:11px;color:var(--hint);margin-bottom:6px;font-weight:600">AI HANDLES</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px">
+        <span style="font-size:11px;background:var(--bg);padding:2px 8px;border-radius:6px;color:var(--muted)">Emergency detection</span>
+        <span style="font-size:11px;background:var(--bg);padding:2px 8px;border-radius:6px;color:var(--muted)">Maintenance scheduling</span>
+        <span style="font-size:11px;background:var(--bg);padding:2px 8px;border-radius:6px;color:var(--muted)">Quote captures</span>
+        <span style="font-size:11px;background:var(--bg);padding:2px 8px;border-radius:6px;color:var(--muted)">After-hours coverage</span>
+      </div>
+      <div class="callout callout-purple" style="font-style:italic;font-size:12px">"Every missed call in summer is a $500+ job. How many are you missing right now?"</div>
+    </div>
+
+    <div class="card" style="border-color:#0891b233">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+        <div><div style="font-size:22px">🔧</div><div style="font-weight:800;color:var(--cyan);font-size:16px;margin-top:4px">Plumbing</div></div>
+        <div style="text-align:right"><div style="font-size:11px;color:var(--hint)">Suggested price</div><div style="font-weight:800;color:var(--green);font-size:15px">$149–$249/mo</div></div>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.6">Emergencies at 2am. Customers call 3 competitors if you don't answer in 60 seconds.</p>
+      <div style="font-size:11px;color:var(--hint);margin-bottom:6px;font-weight:600">AI HANDLES</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px">
+        <span style="font-size:11px;background:var(--bg);padding:2px 8px;border-radius:6px;color:var(--muted)">Emergency triage</span>
+        <span style="font-size:11px;background:var(--bg);padding:2px 8px;border-radius:6px;color:var(--muted)">After-hours escalation</span>
+        <span style="font-size:11px;background:var(--bg);padding:2px 8px;border-radius:6px;color:var(--muted)">Appointment booking</span>
+        <span style="font-size:11px;background:var(--bg);padding:2px 8px;border-radius:6px;color:var(--muted)">Upsell maintenance plans</span>
+      </div>
+      <div class="callout callout-purple" style="font-style:italic;font-size:12px">"A burst pipe call at midnight — your AI answers in 1 ring. That's a $2,000 job saved."</div>
+    </div>
+
+    <div class="card" style="border-color:#d9780633">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+        <div><div style="font-size:22px">⚡</div><div style="font-weight:800;color:var(--orange);font-size:16px;margin-top:4px">Electrical</div></div>
+        <div style="text-align:right"><div style="font-size:11px;color:var(--hint)">Suggested price</div><div style="font-weight:800;color:var(--green);font-size:15px">$149–$249/mo</div></div>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.6">Licensed electricians are expensive and on jobs all day. Office staff is usually zero.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px">
+        <span style="font-size:11px;background:var(--bg);padding:2px 8px;border-radius:6px;color:var(--muted)">Safety screening</span>
+        <span style="font-size:11px;background:var(--bg);padding:2px 8px;border-radius:6px;color:var(--muted)">Commercial vs residential routing</span>
+        <span style="font-size:11px;background:var(--bg);padding:2px 8px;border-radius:6px;color:var(--muted)">Free estimate booking</span>
+      </div>
+      <div class="callout callout-purple" style="font-style:italic;font-size:12px">"Panel upgrades are $3,000+ jobs. Miss that call while on a job site — gone forever."</div>
+    </div>
+
+    <div class="card" style="border-color:#4f46e533">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+        <div><div style="font-size:22px">🏊</div><div style="font-weight:800;color:#818cf8;font-size:16px;margin-top:4px">Pool & Spa</div></div>
+        <div style="text-align:right"><div style="font-size:11px;color:var(--hint)">Suggested price</div><div style="font-weight:800;color:var(--green);font-size:15px">$99–$199/mo</div></div>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.6">Seasonal surge March–Sept. Staff is servicing pools all day. 40+ calls/day during summer.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px">
+        <span style="font-size:11px;background:var(--bg);padding:2px 8px;border-radius:6px;color:var(--muted)">Green water triage</span>
+        <span style="font-size:11px;background:var(--bg);padding:2px 8px;border-radius:6px;color:var(--muted)">Seasonal scripts</span>
+        <span style="font-size:11px;background:var(--bg);padding:2px 8px;border-radius:6px;color:var(--muted)">Service plan upsell</span>
+      </div>
+      <div class="callout callout-purple" style="font-style:italic;font-size:12px">"You're cleaning 8 pools a day. You can't answer. We answer every call and book the job."</div>
+    </div>
+
+    <div class="card" style="border-color:#05966933">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+        <div><div style="font-size:22px">💧</div><div style="font-weight:800;color:var(--green);font-size:16px;margin-top:4px">Irrigation</div></div>
+        <div style="text-align:right"><div style="font-size:11px;color:var(--hint)">Suggested price</div><div style="font-weight:800;color:var(--green);font-size:15px">$99–$199/mo</div></div>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.6">Spring blowout season = 300% call volume spike. 2-person operations can't handle it.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px">
+        <span style="font-size:11px;background:var(--bg);padding:2px 8px;border-radius:6px;color:var(--muted)">Season-based routing</span>
+        <span style="font-size:11px;background:var(--bg);padding:2px 8px;border-radius:6px;color:var(--muted)">Blowout appointment booking</span>
+        <span style="font-size:11px;background:var(--bg);padding:2px 8px;border-radius:6px;color:var(--muted)">Waitlist management</span>
+      </div>
+      <div class="callout callout-purple" style="font-style:italic;font-size:12px">"In April you get 200 calls in 2 weeks. Your AI books all of them while you're in the field."</div>
+    </div>
+
+    <div class="card" style="border-color:#db277733">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+        <div><div style="font-size:22px">🍳</div><div style="font-weight:800;color:var(--pink);font-size:16px;margin-top:4px">Appliance Repair</div></div>
+        <div style="text-align:right"><div style="font-size:11px;color:var(--hint)">Suggested price</div><div style="font-weight:800;color:var(--green);font-size:15px">$99–$149/mo</div></div>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.6">80% of calls are "can you fix my [X] and how much?" — totally repetitive, perfectly handled by AI.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px">
+        <span style="font-size:11px;background:var(--bg);padding:2px 8px;border-radius:6px;color:var(--muted)">Brand + model capture</span>
+        <span style="font-size:11px;background:var(--bg);padding:2px 8px;border-radius:6px;color:var(--muted)">FAQ handling</span>
+        <span style="font-size:11px;background:var(--bg);padding:2px 8px;border-radius:6px;color:var(--muted)">Diagnostic booking</span>
+      </div>
+      <div class="callout callout-purple" style="font-style:italic;font-size:12px">"Every one of your calls is someone asking the same 5 questions. Why are YOU answering those?"</div>
+    </div>
+
+    <div class="card" style="border-color:#dc262633">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+        <div><div style="font-size:22px">🔑</div><div style="font-weight:800;color:var(--red);font-size:16px;margin-top:4px">Locksmith</div></div>
+        <div style="text-align:right"><div style="font-size:11px;color:var(--hint)">Suggested price</div><div style="font-weight:800;color:var(--green);font-size:15px">$99–$149/mo</div></div>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.6">Lockouts are 100% urgent. Customer calls 5 locksmiths simultaneously — first to answer wins.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px">
+        <span style="font-size:11px;background:var(--bg);padding:2px 8px;border-radius:6px;color:var(--muted)">24/7 instant answer</span>
+        <span style="font-size:11px;background:var(--bg);padding:2px 8px;border-radius:6px;color:var(--muted)">Location capture</span>
+        <span style="font-size:11px;background:var(--bg);padding:2px 8px;border-radius:6px;color:var(--muted)">ETA estimation</span>
+      </div>
+      <div class="callout callout-purple" style="font-style:italic;font-size:12px">"Your competitor answers. You don't. They get $200. You get nothing."</div>
+    </div>
+
+    <div class="card" style="border-color:#d9780633">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px">
+        <div><div style="font-size:22px">🏡</div><div style="font-weight:800;color:var(--orange);font-size:16px;margin-top:4px">Septic</div></div>
+        <div style="text-align:right"><div style="font-size:11px;color:var(--hint)">Suggested price</div><div style="font-weight:800;color:var(--green);font-size:15px">$149–$199/mo</div></div>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:10px;line-height:1.6">Septic emergencies are urgent and disgusting. Customers pay premium for fast response.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px">
+        <span style="font-size:11px;background:var(--bg);padding:2px 8px;border-radius:6px;color:var(--muted)">Emergency triage</span>
+        <span style="font-size:11px;background:var(--bg);padding:2px 8px;border-radius:6px;color:var(--muted)">Pump-out scheduling</span>
+        <span style="font-size:11px;background:var(--bg);padding:2px 8px;border-radius:6px;color:var(--muted)">After-hours escalation</span>
+      </div>
+      <div class="callout callout-purple" style="font-style:italic;font-size:12px">"Sewage backup at 9pm — they'll pay anything. Will your phone answer or go to voicemail?"</div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════ AI CALLER ═══════════════════════════════ -->
+<div id="caller" class="section reveal">
+  <div class="section-header">
+    <div class="section-label" style="color:var(--pink)">05 — AI Caller Blueprint</div>
+    <div class="section-title">Research → Call → Track → Follow Up</div>
+    <div class="section-sub">Every prospect is researched before the call. Every outcome is tracked automatically.</div>
+  </div>
+
+  <div class="callout callout-purple" style="margin-bottom:20px">
+    <strong style="color:var(--text)">Why personalization matters:</strong> Generic AI cold calls convert at 1–2%. Research-first personalized calls convert at 8–12%. The difference is the AI mentioning specific things about their business — their star rating, their voicemail, whether they're running ads.
+  </div>
+
+  <div class="grid-2" style="margin-bottom:16px">
+    <div class="card" style="border-color:var(--blue)33">
+      <div style="font-size:11px;color:var(--blue);font-weight:700;margin-bottom:10px;letter-spacing:1px">RESEARCHED BEFORE EVERY CALL</div>
+      <div class="timeline-item">
+        <div class="timeline-line"><div class="timeline-dot" style="background:var(--purple)"></div><div class="timeline-connector"></div></div>
+        <div style="padding-bottom:12px"><div style="font-weight:600;font-size:13px;margin-bottom:2px">🌐 Website & Services</div><div style="font-size:12px;color:var(--muted)">What they offer, service areas, team size</div></div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-line"><div class="timeline-dot" style="background:var(--blue)"></div><div class="timeline-connector"></div></div>
+        <div style="padding-bottom:12px"><div style="font-weight:600;font-size:13px;margin-bottom:2px">⭐ Google Reviews & Rating</div><div style="font-size:12px;color:var(--muted)">Star rating, review count, sentiment summary</div></div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-line"><div class="timeline-dot" style="background:var(--cyan)"></div><div class="timeline-connector"></div></div>
+        <div style="padding-bottom:12px"><div style="font-weight:600;font-size:13px;margin-bottom:2px">📞 Live Answer vs Voicemail</div><div style="font-size:12px;color:var(--muted)">Silent test call detects how they answer</div></div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-line"><div class="timeline-dot" style="background:var(--orange)"></div><div class="timeline-connector"></div></div>
+        <div style="padding-bottom:12px"><div style="font-weight:600;font-size:13px;margin-bottom:2px">📣 Running Google Ads?</div><div style="font-size:12px;color:var(--muted)">If yes — they're paying for leads they miss. Top priority target.</div></div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-line"><div class="timeline-dot" style="background:var(--pink)"></div></div>
+        <div><div style="font-weight:600;font-size:13px;margin-bottom:2px">📱 Social Media Presence</div><div style="font-size:12px;color:var(--muted)">Active or abandoned Facebook/Instagram</div></div>
+      </div>
+    </div>
+
+    <div class="card" style="border-color:var(--green)33">
+      <div style="font-size:11px;color:var(--green);font-weight:700;margin-bottom:10px;letter-spacing:1px">CALL OUTCOMES & AUTOMATION</div>
+      <div class="card-sm" style="margin-bottom:8px;border-left:3px solid #dc2626">
+        <div style="font-weight:700;font-size:12px;margin-bottom:4px">🔥 Interested</div>
+        <div style="font-size:12px;color:var(--muted)">Auto-text Calendly link within 60 seconds. Tagged Hot Lead in GHL.</div>
+      </div>
+      <div class="card-sm" style="margin-bottom:8px;border-left:3px solid var(--orange)">
+        <div style="font-weight:700;font-size:12px;margin-bottom:4px">📅 Callback Requested</div>
+        <div style="font-size:12px;color:var(--muted)">Auto-schedules AI callback at exact requested time.</div>
+      </div>
+      <div class="card-sm" style="margin-bottom:8px;border-left:3px solid var(--blue)">
+        <div style="font-weight:700;font-size:12px;margin-bottom:4px">📬 Voicemail</div>
+        <div style="font-size:12px;color:var(--muted)">Personalized voicemail left. Retries up to 3× over 7 days.</div>
+      </div>
+      <div class="card-sm" style="margin-bottom:8px;border-left:3px solid var(--hint)">
+        <div style="font-weight:700;font-size:12px;margin-bottom:4px">❌ Not Interested</div>
+        <div style="font-size:12px;color:var(--muted)">Tagged DNC. Removed permanently. No further contact.</div>
+      </div>
+      <div class="card-sm" style="border-left:3px solid var(--cyan)">
+        <div style="font-weight:700;font-size:12px;margin-bottom:4px">🤔 Send More Info</div>
+        <div style="font-size:12px;color:var(--muted)">Triggers email sequence with industry case study + follow-up in 5 days.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="font-size:11px;color:var(--pink);font-weight:700;margin-bottom:12px;letter-spacing:1px">MASTER CALL SCRIPT STRUCTURE</div>
+    <div class="grid-2">
+      <div class="card-sm"><div style="font-size:11px;color:var(--purple);font-weight:700;margin-bottom:4px">OPENING (5 sec)</div><p style="font-size:12px;color:var(--muted);line-height:1.6">"Hi, is this [Business Name]? This is Jordan calling on behalf of [Your Company] — I have a quick 30-second message about your phone system."</p></div>
+      <div class="card-sm"><div style="font-size:11px;color:var(--blue);font-weight:700;margin-bottom:4px">THE HOOK (20 sec)</div><p style="font-size:12px;color:var(--muted);line-height:1.6">References their specific star rating, mentions if they go to voicemail, notes if they run Google Ads. "That's exactly the problem we solve."</p></div>
+      <div class="card-sm"><div style="font-size:11px;color:var(--cyan);font-weight:700;margin-bottom:4px">LIVE DEMO (10 sec)</div><p style="font-size:12px;color:var(--muted);line-height:1.6">AI plays a clip of what their phone system would sound like — using their actual business name. Hearing is believing.</p></div>
+      <div class="card-sm"><div style="font-size:11px;color:var(--green);font-weight:700;margin-bottom:4px">CLOSE (30 sec)</div><p style="font-size:12px;color:var(--muted);line-height:1.6">Option A: close on the spot. Option B: book a 10-min demo. Option C: send a case study. Always give them a clear next step.</p></div>
+    </div>
+    <div class="callout callout-orange" style="margin-top:12px">
+      <strong style="color:var(--text)">Legal note:</strong> Opening line must include "This is an automated call on behalf of [Company]." Call only 9am–5pm local time. Honor all DNC requests immediately. Keep call logs as compliance records.
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ═══════════════════════════════ TOOLS ═══════════════════════════════ -->
+<div id="tools" class="section reveal">
+  <div class="section-header">
+    <div class="section-label" style="color:var(--green)">06 — Tool Stack</div>
+    <div class="section-title">Everything You Need — Total ~$350/mo</div>
+    <div class="section-sub">One client at $150/mo covers most of the startup cost.</div>
+  </div>
+
+  <div class="grid-3">
+    <div class="tool-card" style="border-top:2px solid var(--purple)">
+      <div class="tool-name">GoHighLevel</div>
+      <div class="tool-desc">All-in-one CRM, pipeline, contracts, billing, follow-up automation, client dashboards</div>
+      <div class="tool-cost">$97/mo</div>
+      <div class="tool-url">gohighlevel.com</div>
+    </div>
+    <div class="tool-card" style="border-top:2px solid var(--blue)">
+      <div class="tool-name">Bland.ai</div>
+      <div class="tool-desc">Outbound AI voice caller. Upload lead list, it dials automatically with personalized script</div>
+      <div class="tool-cost">$0.09/min</div>
+      <div class="tool-url">bland.ai</div>
+    </div>
+    <div class="tool-card" style="border-top:2px solid var(--cyan)">
+      <div class="tool-name">Synthflow</div>
+      <div class="tool-desc">Inbound AI phone system you white-label and sell to clients. No-code, easy setup</div>
+      <div class="tool-cost">$97/mo</div>
+      <div class="tool-url">synthflow.ai</div>
+    </div>
+    <div class="tool-card" style="border-top:2px solid var(--green)">
+      <div class="tool-name">n8n Cloud</div>
+      <div class="tool-desc">Automation backbone — connects all tools, runs workflows, handles lead flow</div>
+      <div class="tool-cost">$20/mo</div>
+      <div class="tool-url">n8n.io</div>
+    </div>
+    <div class="tool-card" style="border-top:2px solid var(--orange)">
+      <div class="tool-name">Outscraper</div>
+      <div class="tool-desc">Scrapes Google Maps for business leads — name, phone, address, reviews, rating</div>
+      <div class="tool-cost">Free credits + pay/use</div>
+      <div class="tool-url">outscraper.com</div>
+    </div>
+    <div class="tool-card" style="border-top:2px solid var(--pink)">
+      <div class="tool-name">Firecrawl</div>
+      <div class="tool-desc">Scrapes prospect websites to extract services, team size, and pricing for personalization</div>
+      <div class="tool-cost">$16/mo</div>
+      <div class="tool-url">firecrawl.dev</div>
+    </div>
+    <div class="tool-card" style="border-top:2px solid var(--purple)">
+      <div class="tool-name">Claude Pro</div>
+      <div class="tool-desc">Writes all scripts, emails, case studies, objection handlers, and client onboarding content</div>
+      <div class="tool-cost">$20/mo</div>
+      <div class="tool-url">claude.ai</div>
+    </div>
+    <div class="tool-card" style="border-top:2px solid var(--blue)">
+      <div class="tool-name">Stripe</div>
+      <div class="tool-desc">Client billing and subscriptions. Integrates directly into GoHighLevel contracts</div>
+      <div class="tool-cost">2.9% per transaction</div>
+      <div class="tool-url">stripe.com</div>
+    </div>
+    <div class="tool-card" style="border-top:2px solid var(--green)">
+      <div class="tool-name">Cal.com</div>
+      <div class="tool-desc">Free demo booking calendar. Prospects self-schedule 10-min demo calls from AI text</div>
+      <div class="tool-cost">Free</div>
+      <div class="tool-url">cal.com</div>
+    </div>
+    <div class="tool-card" style="border-top:2px solid var(--cyan)">
+      <div class="tool-name">Twilio</div>
+      <div class="tool-desc">Phone numbers for clients' AI systems. Handles call forwarding and routing</div>
+      <div class="tool-cost">$1–2/number/mo</div>
+      <div class="tool-url">twilio.com</div>
+    </div>
+    <div class="tool-card" style="border-top:2px solid var(--orange)">
+      <div class="tool-name">SerpAPI</div>
+      <div class="tool-desc">Detects if prospects are running Google Ads — flags highest priority leads</div>
+      <div class="tool-cost">$50/mo</div>
+      <div class="tool-url">serpapi.com</div>
+    </div>
+    <div class="tool-card" style="border-top:2px solid var(--pink)">
+      <div class="tool-name">Google Sheets</div>
+      <div class="tool-desc">Raw data backup for all leads and call outcomes. Syncs automatically from GHL via n8n</div>
+      <div class="tool-cost">Free</div>
+      <div class="tool-url">sheets.google.com</div>
+    </div>
+  </div>
+
+  <div class="callout callout-green" style="margin-top:20px">
+    <strong style="color:var(--text)">Total monthly tool cost: ~$300–$370.</strong> Your break-even point is 2–3 clients. After that, every client is pure profit on top of tools. At 20 clients you're netting $2,600–$3,700/month after all tool costs.
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- FOOTER -->
+<footer>
+  <div style="font-weight:700;font-size:15px;color:var(--text);margin-bottom:6px">AI Phone Agency</div>
+  <div style="margin-bottom:12px">Home Services · Specialty Trades · 8 Industry Kits · Full Automation Stack</div>
+  <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:16px">
+    <span>Built with Claude</span>
+    <span>·</span>
+    <span>Powered by Bland.ai + Synthflow + GoHighLevel</span>
+    <span>·</span>
+    <span>Target: $10K–$22K MRR in 12 months</span>
+  </div>
+  <div style="font-size:11px;color:var(--border)">Download this file and open in any browser. Works offline.</div>
+</footer>
+
+<script>
+function scrollTo(id){document.getElementById(id)?.scrollIntoView({behavior:'smooth',block:'start'})}
+function toggleAcc(h){h.classList.toggle('open');const b=h.nextElementSibling;b.classList.toggle('open');if(b.classList.contains('open'))b.style.display='block';else b.style.display='none'}
+function toggleCheck(el){el.classList.toggle('done')}
+function switchTab(group,id,btn){
+  document.querySelectorAll('[id^="'+group+'-"]').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(group+'-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// Scroll reveal
+const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('revealed')})},{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// Active nav on scroll
+const sections=['biz','action','systems','industries','caller','tools'];
+window.addEventListener('scroll',()=>{
+  const scrollY=window.scrollY+80;
+  sections.forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    const top=el.offsetTop,h=el.offsetHeight;
+    const link=document.querySelector(`.nav-links a[onclick="scrollTo('${id}')"]`);
+    if(link){
+      if(scrollY>=top&&scrollY<top+h)link.classList.add('active');
+      else link.classList.remove('active');
+    }
+  });
+});
+</script>
+</body>
+</html>
